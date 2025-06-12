@@ -1,0 +1,180 @@
+const axios = require('axios');
+const cheerio = require('cheerio');
+
+async function parseTechCrunchStartups() {
+  try {
+    const url = 'https://techcrunch.com/category/startups/page/2/';
+    
+    // Set headers to mimic a browser request
+    const headers = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+      'Accept-Language': 'en-US,en;q=0.5',
+      'Accept-Encoding': 'gzip, deflate',
+      'Connection': 'keep-alive',
+    };
+
+    console.log('Fetching TechCrunch startup articles...');
+    const response = await axios.get(url, { headers });
+    const $ = cheerio.load(response.data);
+
+    // console.log($('div.wp-block-columns.is-layout-flex.wp-container-core-columns-is-layout-3.wp-block-columns-is-layout-flex > div:nth-child(1) > div > ul').text())
+
+    const articles = [];
+
+    // Parse article elements - TechCrunch uses specific selectors
+    $('div.wp-block-columns.is-layout-flex.wp-container-core-columns-is-layout-3.wp-block-columns-is-layout-flex > div:nth-child(1) > div > ul').each((i, element) => {
+      const $article = $(element);
+
+      $article.children('li').each((index, element) => {
+        const $li = $(element);
+        const title = $li.find('h3').text().trim();
+        const link = $li.find('h3 > a').attr('href');
+        const date = $li.find('time').text();
+        console.log(title)
+        console.log(link)
+        console.log(date)
+
+      })
+      // Extract article data
+      const title = $article.find('h2 a, h3 a, .post-block__title__link').first().text().trim();
+      
+      const link = $article.find('h2 a, h3 a, .post-block__title__link').first().attr('href');
+      const excerpt = $article.find('.post-block__content, .excerpt').text().trim();
+      const author = $article.find('.river-byline__authors a, .byline a').text().trim();
+      const publishDate = $article.find('time, .river-byline__time').attr('datetime') || 
+                         $article.find('time, .river-byline__time').text().trim();
+      
+      // Extract image if available
+      const imageElement = $article.find('img').first();
+      const image = imageElement.attr('src') || imageElement.attr('data-src');
+      
+      // Extract tags/categories
+      const tags = [];
+      $article.find('.tags a, .category a').each((j, tagEl) => {
+        const tag = $(tagEl).text().trim();
+        if (tag) tags.push(tag);
+      });
+
+      // Only add articles with at least a title and link
+      if (title && link) {
+        articles.push({
+          title,
+          link: link.startsWith('http') ? link : `https://techcrunch.com${link}`,
+          excerpt: excerpt || null,
+          author: author || null,
+          publishDate: publishDate || null,
+          image: image || null,
+          tags: tags.length > 0 ? tags : null,
+          source: 'TechCrunch - Startups'
+        });
+      }
+    });
+
+    // If no articles found with the above selectors, try alternative selectors
+    if (articles.length === 0) {
+      console.log('Trying alternative selectors...');
+      
+      $('.post-block, .river-block').each((i, element) => {
+        const $block = $(element);
+        
+        const title = $block.find('a').first().text().trim() || 
+                     $block.find('h2, h3, h4').text().trim();
+        const link = $block.find('a').first().attr('href');
+        const excerpt = $block.find('p').first().text().trim();
+        
+        if (title && link) {
+          articles.push({
+            title,
+            link: link.startsWith('http') ? link : `https://techcrunch.com${link}`,
+            excerpt: excerpt || null,
+            author: null,
+            publishDate: null,
+            image: null,
+            tags: null,
+            source: 'TechCrunch - Startups'
+          });
+        }
+      });
+    }
+
+    const result = {
+      url: url,
+      scrapedAt: new Date().toISOString(),
+      totalArticles: articles.length,
+      articles: articles
+    };
+
+    return result;
+
+  } catch (error) {
+    console.error('Error scraping TechCrunch:', error.message);
+    return {
+      error: error.message,
+      url: 'https://techcrunch.com/category/startups/',
+      scrapedAt: new Date().toISOString(),
+      totalArticles: 0,
+      articles: []
+    };
+  }
+}
+
+// Function to save results to JSON file
+async function saveToJSON(filename = 'techcrunch_startups.json') {
+  const fs = require('fs');
+  
+  try {
+    const data = await parseTechCrunchStartups();
+    const jsonString = JSON.stringify(data, null, 2);
+    
+    fs.writeFileSync(filename, jsonString);
+    console.log(`Results saved to ${filename}`);
+    console.log(`Found ${data.totalArticles} articles`);
+    
+    return data;
+  } catch (error) {
+    console.error('Error saving to JSON:', error);
+  }
+}
+
+// Execute the scraper
+async function main() {
+  console.log('Starting TechCrunch startup articles scraper...\n');
+  
+  const results = await parseTechCrunchStartups();
+  
+  // Display results
+  console.log('\n=== SCRAPING RESULTS ===');
+  console.log(`Total articles found: ${results.totalArticles}`);
+  console.log(`Scraped at: ${results.scrapedAt}`);
+  
+  if (results.articles && results.articles.length > 0) {
+    console.log('\n=== SAMPLE ARTICLES ===');
+    results.articles.slice(0, 3).forEach((article, index) => {
+      console.log(`\n${index + 1}. ${article.title}`);
+      console.log(`   Link: ${article.link}`);
+      console.log(`   Author: ${article.author || 'N/A'}`);
+      console.log(`   Date: ${article.publishDate || 'N/A'}`);
+      if (article.excerpt) {
+        console.log(`   Excerpt: ${article.excerpt.substring(0, 100)}...`);
+      }
+    });
+  }
+  
+  // Uncomment the line below to save to JSON file
+  // await saveToJSON();
+  
+  return results;
+}
+
+// Export functions for use in other modules
+module.exports = {
+  parseTechCrunchStartups,
+  saveToJSON,
+  main
+};
+
+// Run if called directly
+if (require.main === module) {
+  main().catch(console.error);
+}
