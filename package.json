@@ -5,9 +5,9 @@
   "main": "app.js",
   "scripts": {
     "dev": "nodemon",
-    "start": "NODE_ENV=production node dist/app.js",
-    "build": "tsc && webpack",
-    "check": "tsc"
+    "start": "NODE_ENV=production node server.js",
+    "build": "tsc",
+    "vercel-build": "npm run build"
   },
   "keywords": [],
   "author": "Amadikwa Emmanuel",
