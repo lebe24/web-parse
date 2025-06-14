@@ -1,0 +1,28 @@
+
+
+{
+    "name": "web-parser",
+    "version": "1.0.0",
+    "description": "Production-ready Node.js Todo API with authentication and rate limiting",
+    "endpoints": {
+    "GET /health": "Health check",
+    "POST /api/register": "Register new user",
+    "POST /api/login": "Login user",
+    "POST /api/logout": "Logout user",
+    "GET /api/user": "Get current user",
+    "GET /api/todos": "Get user todos",
+    "POST /api/todos": "Create new todo",
+    "PATCH /api/todos/:id": "Update todo",
+    "DELETE /api/todos/:id": "Delete todo",
+    "GET /api/rate-limit-status": "Get rate limit status"
+    },
+    "features": [
+        "User authentication with session management",
+        "Todo CRUD operations with user isolation",
+        "Priority levels (low, medium, high)",
+        "Due dates and timestamps",
+        "Rate limiting for security",
+        "PostgreSQL database with Drizzle ORM",
+        "Production-ready error handling"
+    ]
+}

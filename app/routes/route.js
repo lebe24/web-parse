@@ -1,14 +1,27 @@
-// routes/parse.js
-const express = require('express');
-const router = express.Router();
-const parsers = require('../parser/index.js'); // correct the path to your parsers folder
+// routes/route.js
 
-// Health check endpoint
-router.get('/', async(req, res) => {
-  return res.status(200).json(
-    { 
-        app: "this is an n8n-parser" 
-    });
+const express = require('express');
+const { rateLimit } = require('express-rate-limit')
+
+const parsers = require('../parser/index.js'); // correct the path to your parsers folder
+const appData = require('../data/info.json');
+
+const router = express.Router();
+
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: {
+    error: "Too many requests from this IP, please try again after 15 minutes."
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Application information
+router.get('/', async(req, res) => { 
+  return res.status(200).json(appData); 
 });
 
 router.post('/', async (req, res) => {

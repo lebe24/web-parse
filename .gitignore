@@ -20,6 +20,7 @@ coverage/
 # Environment variables
 .env
 .env.*
+app/app.txt
 
 # OS files
 .DS_Store

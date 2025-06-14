@@ -2,7 +2,6 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 
 
- 
 module.exports = async function parseTechCrunchList(url) {
 
   const headers = {
@@ -28,7 +27,7 @@ module.exports = async function parseTechCrunchList(url) {
         const $li = $(element);
         const title = $li.find('h3').text().trim();
         const link = $li.find('h3 > a').attr('href');
-        const date = $li.find('time').text();
+        const date = $li.find('time').text().trim();
 
         articles.push({
           title : title,
@@ -43,47 +42,13 @@ module.exports = async function parseTechCrunchList(url) {
     return articles
 
     }catch{
-
       console.error('Error scraping TechCrunch:', error.message);
-    return {
-      error: error.message,
-      url: 'https://techcrunch.com/category/startups/',
-      scrapedAt: new Date().toISOString(),
-      totalArticles: 0,
-      articles: []
-    };
+      return {
+        error: error.message,
+        url: 'https://techcrunch.com/',
+        scrapedAt: new Date().toISOString(),
+        totalArticles: 0,
+        articles: []
+      };
     }
 }
-
-
-// module.exports = async function parseTechCrunchList(url = 'https://techcrunch.com/') {
-//   const { data: html } = await axios.get(url, {
-//     headers: {
-//       'User-Agent': 'Mozilla/5.0 (compatible; WebParser/1.0)'
-//     }
-//   });
-
-//   const $ = cheerio.load(html);
-//   const articles = [];
-
-//   $('a.post-block__title__link').each((_, el) => {
-//     const element = $(el);
-//     const title = element.text().trim();
-//     const link = element.attr('href');
-
-//     const parent = element.closest('.post-block');
-//     const preview = parent.find('.post-block__content').text().trim();
-//     const author = parent.find('.river-byline__authors').text().trim();
-//     const date = parent.find('time').attr('datetime');
-
-//     articles.push({
-//       title,
-//       url: link,
-//       author,
-//       date,
-//       preview
-//     });
-//   });
-
-//   return articles;
-// };
