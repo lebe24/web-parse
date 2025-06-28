@@ -7,7 +7,7 @@
     "dev": "nodemon",
     "start": "NODE_ENV=production node app/server.js",
     "build": "tsc",
-    "vercel-build": "npm run build"
+    "netlify-build": "npm run build"
   },
   "keywords": [],
   "author": "Amadikwa Emmanuel",
@@ -22,5 +22,12 @@
   },
   "dependencies": {
     "express-rate-limit": "^7.5.0"
+  },
+  "build": {
+    "command": "npm run netlify-build",
+    "publish": "dist"
+  },
+  "functions": {
+    "directory": "netlify/functions"
   }
 }
