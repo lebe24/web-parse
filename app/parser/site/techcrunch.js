@@ -19,7 +19,7 @@ module.exports = async function parseTechCrunchList(url) {
        const articles = [];
 
        // Parse article elements - TechCrunch uses specific selectors
-    $('div.wp-block-columns.is-layout-flex.wp-container-core-columns-is-layout-3.wp-block-columns-is-layout-flex > div:nth-child(1) > div > ul').each((i, element) => {
+      $('div.wp-block-columns.is-layout-flex.wp-container-core-columns-is-layout-3.wp-block-columns-is-layout-flex > div:nth-child(1) > div > ul').each((i, element) => {
 
       const $article = $(element);
       $article.children('li').each((index, element) => {

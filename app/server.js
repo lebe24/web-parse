@@ -79,7 +79,7 @@ app.listen(PORT, "0.0.0.0", () => {
     hour12: true,
   }).format(new Date());
 
-  console.log(`${formattedTime} [TaskFlow API] serving on port ${PORT}`);
+  console.log(`${formattedTime} [WebParse API] serving on port ${PORT}`);
   console.log(`${formattedTime} [TaskFlow API] visit http://localhost:${PORT} for API documentation`);
 });
 

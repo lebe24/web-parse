@@ -19,11 +19,13 @@ const apiLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Application information
+//GET Application information 
 router.get('/', async(req, res) => { 
   return res.status(200).json(appData); 
 });
 
+
+// POST 
 router.post('/', async (req, res) => {
   const { site, url } = req.body;
 

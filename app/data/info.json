@@ -5,16 +5,12 @@
     "version": "1.0.0",
     "description": "Production-ready Node.js Todo API with authentication and rate limiting",
     "endpoints": {
-    "GET /health": "Health check",
-    "POST /api/register": "Register new user",
-    "POST /api/login": "Login user",
-    "POST /api/logout": "Logout user",
-    "GET /api/user": "Get current user",
-    "GET /api/todos": "Get user todos",
-    "POST /api/todos": "Create new todo",
-    "PATCH /api/todos/:id": "Update todo",
-    "DELETE /api/todos/:id": "Delete todo",
-    "GET /api/rate-limit-status": "Get rate limit status"
+    "GET /": "Application Title ",
+    "GET /parse":"Application Description and Endpoint information",
+    "POST /parse": "Register new user",
+    "POST /ai": "Get AI-generated response",
+    "GET /health": "Get Application health status"
+    
     },
     "features": [
         "User authentication with session management",

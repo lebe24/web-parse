@@ -20,7 +20,9 @@ coverage/
 # Environment variables
 .env
 .env.*
-app/app.txt
+/app/app.txt
+/app/test.js
+/app/example.html
 
 # OS files
 .DS_Store
